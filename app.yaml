@@ -4,6 +4,13 @@ api_version: 1
 threadsafe: true
 
 handlers:
+- url: /login/mendeley/.*
+  script: src.login.mendeley.app
+
+  
+- url: /login/.*
+  script: src.login.login.app
+  
 - url: /.*
   script: src.main.app
   
