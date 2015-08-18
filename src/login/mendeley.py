@@ -42,22 +42,50 @@ class MendeleyLoginRedirect(webapp2.RequestHandler):
             request = urllib2.Request(url, urllib.urlencode(params))
             result = urllib2.urlopen(request)
             tokens = json.loads(result.read())
-            logging.info(tokens)
+
             credentials = {
                 "refresh_token": tokens["refresh_token"],
                 "token_type": tokens["token_type"]
             }
             
+            # get profile
+            urllib2.Request("https://api.mendeley.com/profile")
+            params = {
+            }
+            
+            # return
             self.redirect("/login/mendeley/loginsuccess?access_token=%s&token_type=%s" % (tokens["access_token"], tokens["token_type"]))
             return
         self.redirect("/login/mendeley/login")
         
 class MendeleyLoginSuccess(webapp2.RequestHandler):
     def get(self):
+        self.redirect("/login/mendeley/loginsuccess?access_token=%s&token_type=%s" % (tokens["access_token"], tokens["token_type"]))
         pass
         
 class MendeleyRenewAuthToken(webapp2.RequestHandler):
     def get(self):
+        url = "https://api.mendeley.com/oauth/token"
+        params = {
+            'grant_type': "refresh_token",
+            'redirect_uri': 'http://cite4all.appspot.com/login/mendeley/loginredirect',
+            'refresh_token': refresh_token,
+            'client_id': APP_ID,
+            'client_secret': APP_SECRET
+        }
+        request = urllib2.Request(url, urllib.urlencode(params))
+        result = urllib2.urlopen(request)
+        tokens = json.loads(result.read())
+        
+        credentials["refresh_token"] = tokens["refresh_token"]
+        credentials["token_type"] = tokens["token_type"]
+        credntials.put()
+        
+        
+        self.response.write(json.dumps({
+            "access_token": tokens["access_token"],
+            "token_type": tokens["token_type"]
+        }))
         pass
         
         
